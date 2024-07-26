@@ -1,3 +1,6 @@
+// Create a secret for Stripe
+export const secret = new sst.Secret("StripeSecretKey");
+
 // Create an S3 bucket
 export const bucket = new sst.aws.Bucket("Uploads");
 
