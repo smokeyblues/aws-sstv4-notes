@@ -1,8 +1,8 @@
 {
-  "name": "@monorepo-template/functions",
+  "name": "@aws-sst-v4-notes/functions",
   "version": "0.0.0",
   "dependencies": {
-    "@monorepo-template/core": "*",
+    "@aws-sst-v4-notes/core": "*",
     "sst": "*"
   },
   "devDependencies": {
