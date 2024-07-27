@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@stripe/react-stripe-js": "^2.7.3",
+    "@stripe/stripe-js": "^4.1.0",
+    "amazon-cognito-identity-js": "^6.3.13",
     "aws-amplify": "^5.3.19",
     "bootstrap": "^5.3.3",
     "react": "^18.3.1",
