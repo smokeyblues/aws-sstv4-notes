@@ -1,4 +1,4 @@
-import { api } from "./api";
+import { notesApi, usersApi } from "./api";
 import { bucket } from "./storage";
 
 const region = aws.getRegionOutput().name;
@@ -35,7 +35,16 @@ export const identityPool = new sst.aws.CognitoIdentityPool("IdentityPool", {
             ":",
             aws.getCallerIdentityOutput({}).accountId,
             ":",
-            api.nodes.api.id,
+            notesApi.nodes.api.id,
+            "/*/*/*"
+          ),
+          $concat(
+            "arn:aws:execute-api:",
+            region,
+            ":",
+            aws.getCallerIdentityOutput({}).accountId,
+            ":",
+            usersApi.nodes.api.id,
             "/*/*/*"
           ),
         ],
