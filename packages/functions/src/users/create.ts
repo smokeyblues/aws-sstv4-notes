@@ -10,6 +10,8 @@ export const main = Util.handler(async (event) => {
     email: "",
     customerId: "",
     bio: "",
+    subscriptionId: "",
+    subscriptionStatus: "",
   };
 
   if (event.body != null) {
