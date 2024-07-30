@@ -1,5 +1,5 @@
 const config = {
-    STRIPE_KEY: "pk_test_51H5flFItMT7HUULIJU25K7QSB50g8qqrwLVmK6XST0IrYivMZnU9fL90LBPkmJl4ptLbtlrC0Ux6fFN9K4xmfu8200oZDQbTJl",
+    STRIPE_KEY: import.meta.env.VITE_STRIPE_KEY,
     // Frontend config
     MAX_ATTACHMENT_SIZE: 5000000,
     
@@ -10,7 +10,8 @@ const config = {
     },
     apiGateway: {
       REGION: import.meta.env.VITE_REGION,
-      URL: import.meta.env.VITE_API_URL,
+      NOTES_API_URL: import.meta.env.VITE_NOTES_API_URL,
+      USERS_API_URL: import.meta.env.VITE_USERS_API_URL,
     },
     cognito: {
       REGION: import.meta.env.VITE_REGION,

@@ -3,6 +3,10 @@
 import "sst"
 declare module "sst" {
   export interface Resource {
+    Frontend: {
+      type: "sst.aws.StaticSite"
+      url: string
+    }
     IdentityPool: {
       id: string
       type: "sst.aws.CognitoIdentityPool"
@@ -14,6 +18,10 @@ declare module "sst" {
     NotesApi: {
       type: "sst.aws.ApiGatewayV2"
       url: string
+    }
+    StripePublicKey: {
+      type: "sst.sst.Secret"
+      value: string
     }
     StripeSecretKey: {
       type: "sst.sst.Secret"

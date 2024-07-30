@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
 import Stack from "react-bootstrap/Stack";
-import { Auth } from "aws-amplify";
+import { Auth, API } from "aws-amplify";
 import { onError } from "../lib/errorLib";
 import { ISignUpResult } from "amazon-cognito-identity-js";
 import { useNavigate } from "react-router-dom";
@@ -58,6 +58,21 @@ export default function Signup() {
     try {
       await Auth.confirmSignUp(fields.email, fields.confirmationCode);
       await Auth.signIn(fields.email, fields.password);
+
+      // Create the user record in DynamoDB
+      await API.post("users", "/users", {
+        body: {
+          email: fields.email,
+        },
+      });
+
+      // Create Stripe customer
+      await API.post("users", "/users/create-stripe-customer", {
+        body: {
+          email: fields.email,
+        },
+      });
+
       userHasAuthenticated(true);
       nav("/");
     } catch (e) {
