@@ -74,7 +74,7 @@ export default function Signup() {
       });
 
       userHasAuthenticated(true);
-      nav("/");
+      nav("/choose-plan");
     } catch (e) {
       onError(e);
       setIsLoading(false);

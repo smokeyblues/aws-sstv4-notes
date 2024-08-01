@@ -9,11 +9,12 @@ const dynamoDb = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 
 export const main = Util.handler(async (event) => {
   const data = JSON.parse(event.body || "{}");
-  const { priceId } = data;
+  const { planName, isAnnual } = data;
 
-  if (!priceId) {
-    throw new Error("Price ID is required");
+  if (!planName || isAnnual === undefined) {
+    throw new Error("Plan name and billing cycle are required");
   }
+
 
   const userId = event.requestContext.authorizer?.iam.cognitoIdentity.identityId;
 
@@ -37,6 +38,22 @@ export const main = Util.handler(async (event) => {
     apiVersion: "2024-06-20",
   });
 
+    // Determine the correct price ID based on the plan and billing cycle
+    let priceId;
+    switch(planName) {
+      case 'Basic':
+        priceId = isAnnual ? Resource.BasicAnnualPriceId.value : Resource.BasicMonthlyPriceId.value;
+        break;
+      case 'Pro':
+        priceId = isAnnual ? Resource.ProAnnualPriceId.value : Resource.ProMonthlyPriceId.value;
+        break;
+      case 'Enterprise':
+        priceId = isAnnual ? Resource.EnterpriseAnnualPriceId.value : Resource.EnterpriseMonthlyPriceId.value;
+        break;
+      default:
+        throw new Error("Invalid plan name");
+    }
+
   // Create a new subscription
   const subscription = await stripe.subscriptions.create({
     customer: user.customerId,
@@ -47,10 +64,12 @@ export const main = Util.handler(async (event) => {
   const updateParams = {
     TableName: Resource.Users.name,
     Key: { userId: userId },
-    UpdateExpression: "SET subscriptionId = :subscriptionId, subscriptionStatus = :subscriptionStatus",
+    UpdateExpression: "SET subscriptionId = :subscriptionId, subscriptionStatus = :subscriptionStatus, planName = :planName, isAnnual = :isAnnual",
     ExpressionAttributeValues: {
       ":subscriptionId": subscription.id,
       ":subscriptionStatus": subscription.status,
+      ":planName": planName,
+      ":isAnnual": isAnnual,
     },
     ReturnValues: "ALL_NEW" as ReturnValue,
   };
@@ -63,5 +82,7 @@ export const main = Util.handler(async (event) => {
     customerId: user.customerId,
     subscriptionId: subscription.id,
     subscriptionStatus: subscription.status,
+    planName: planName,
+    isAnnual: isAnnual,
   });
 });

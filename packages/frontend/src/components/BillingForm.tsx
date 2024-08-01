@@ -9,18 +9,16 @@ import "./BillingForm.css";
 
 export interface BillingFormType {
   isLoading: boolean;
-  onSubmit: (
-    storage: string,
-    info: { token?: Token; error?: StripeError }
-  ) => Promise<void>;
+  planName: string;
+  isAnnual: boolean;
+  onSubmit: (token: Token | undefined, error: StripeError | undefined) => Promise<void>;
 }
 
-export function BillingForm({ isLoading, onSubmit }: BillingFormType) {
+export function BillingForm({ isLoading, planName, isAnnual, onSubmit }: BillingFormType) {
   const stripe = useStripe();
   const elements = useElements();
   const [fields, handleFieldChange] = useFormFields({
     name: "",
-    storage: "",
   });
   const [isProcessing, setIsProcessing] = useState(false);
   const [isCardComplete, setIsCardComplete] = useState(false);
@@ -32,25 +30,16 @@ export function BillingForm({ isLoading, onSubmit }: BillingFormType) {
       stripe &&
       elements &&
       fields.name !== "" &&
-      fields.storage !== "" &&
       isCardComplete
     );
   }
 
-  async function handleSubmitClick(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!stripe || !elements) {
-      // Stripe.js has not loaded yet. Make sure to disable
-      // form submission until Stripe.js has loaded.
       return;
     }
-
-    if (!elements.getElement(CardElement)) {
-      return;
-    }
-
-    setIsProcessing(true);
 
     const cardElement = elements.getElement(CardElement);
 
@@ -58,30 +47,21 @@ export function BillingForm({ isLoading, onSubmit }: BillingFormType) {
       return;
     }
 
+    setIsProcessing(true);
+
     const { token, error } = await stripe.createToken(cardElement);
 
     setIsProcessing(false);
 
-    onSubmit(fields.storage, { token, error });
+    onSubmit(token, error);
   }
 
+
   return (
-    <Form className="BillingForm" onSubmit={handleSubmitClick}>
-      <Form.Group controlId="storage">
-        <Form.Label>Storage</Form.Label>
-        <Form.Control
-          min="0"
-          size="lg"
-          type="number"
-          value={fields.storage}
-          onChange={handleFieldChange}
-          placeholder="Number of notes to store"
-        />
-      </Form.Group>
-      <hr />
+    <Form className="BillingForm" onSubmit={handleSubmit}>
       <Stack gap={3}>
         <Form.Group controlId="name">
-          <Form.Label>Cardholder&apos;s name</Form.Label>
+          <Form.Label>Cardholder's name</Form.Label>
           <Form.Control
             size="lg"
             type="text"
@@ -91,6 +71,7 @@ export function BillingForm({ isLoading, onSubmit }: BillingFormType) {
           />
         </Form.Group>
         <div>
+          <Form.Group controlId="card">
           <Form.Label>Credit Card Info</Form.Label>
           <CardElement
             className="card-field"
@@ -106,6 +87,7 @@ export function BillingForm({ isLoading, onSubmit }: BillingFormType) {
               },
             }}
           />
+          </Form.Group>
         </div>
         <LoaderButton
           size="lg"
@@ -113,7 +95,7 @@ export function BillingForm({ isLoading, onSubmit }: BillingFormType) {
           isLoading={isLoading}
           disabled={!validateForm()}
         >
-          Purchase
+          Subscribe to {planName} Plan ({isAnnual ? 'Annual' : 'Monthly'})
         </LoaderButton>
       </Stack>
     </Form>

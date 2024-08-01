@@ -1,11 +1,22 @@
-import { notesTable, usersTable, secret } from "./storage";
+import { 
+  notesTable, 
+  usersTable, 
+  stripeSecretKey,
+  stripePublicKey,
+  basicMonthlyPriceId, 
+  basicAnnualPriceId, 
+  proMonthlyPriceId, 
+  proAnnualPriceId, 
+  enterpriseMonthlyPriceId, 
+  enterpriseAnnualPriceId, 
+} from "./storage";
 
 // Create the API
 export const notesApi = new sst.aws.ApiGatewayV2("NotesApi", {
   transform: {
     route: {
       handler: {
-        link: [notesTable, secret],
+        link: [notesTable, stripeSecretKey],
       },
       args: {
         auth: { iam: true }
@@ -19,7 +30,16 @@ export const usersApi = new sst.aws.ApiGatewayV2("UsersApi", {
   transform: {
     route: {
       handler: {
-        link: [usersTable, secret],
+        link: [
+          usersTable, 
+          stripeSecretKey, 
+          stripePublicKey,
+          basicMonthlyPriceId, 
+          basicAnnualPriceId, 
+          proMonthlyPriceId, 
+          proAnnualPriceId, 
+          enterpriseMonthlyPriceId, 
+          enterpriseAnnualPriceId],
       },
       args: {
         auth: { iam: true }

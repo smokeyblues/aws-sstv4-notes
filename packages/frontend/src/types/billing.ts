@@ -1,4 +1,5 @@
 export interface BillingType {
-    storage: string;
-    source?: string;
-  }
+  planName: string;
+  isAnnual: boolean;
+  source?: string;
+}

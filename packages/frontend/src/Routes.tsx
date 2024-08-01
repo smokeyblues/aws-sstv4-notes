@@ -5,6 +5,7 @@ import Signup from "./containers/Signup.tsx";
 import NewNote from "./containers/NewNote.tsx";
 import Notes from "./containers/Notes.tsx";
 import Settings from "./containers/Settings.tsx";
+import PlanPicker from "./components/PlanPicker.tsx";
 import NotFound from "./containers/NotFound.tsx";
 
 import AuthenticatedRoute from "./components/AuthenticatedRoute.tsx";
@@ -53,6 +54,15 @@ export default function Links() {
     element={
         <AuthenticatedRoute>
         <Notes />
+        </AuthenticatedRoute>
+    }
+    />
+
+    <Route
+    path="/choose-plan"
+    element={
+        <AuthenticatedRoute>
+        <PlanPicker />
         </AuthenticatedRoute>
     }
     />

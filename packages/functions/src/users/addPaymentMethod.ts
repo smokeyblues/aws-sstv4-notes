@@ -12,7 +12,7 @@ export const main = Util.handler(async (event) => {
   const { token } = data;
 
   if (!token) {
-    throw new Error("Stripe token is required");
+    throw new Error("Stripe token is required, ya big dummy!");
   }
 
   const userId = event.requestContext.authorizer?.iam.cognitoIdentity.identityId;
