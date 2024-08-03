@@ -9,12 +9,11 @@ const dynamoDb = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 
 export const main = Util.handler(async (event) => {
   const data = JSON.parse(event.body || "{}");
-  const { planName, isAnnual } = data;
+  const { priceId, planName, isAnnual } = data;
 
   if (!planName || isAnnual === undefined) {
     throw new Error("Plan name and billing cycle are required");
   }
-
 
   const userId = event.requestContext.authorizer?.iam.cognitoIdentity.identityId;
 
@@ -38,21 +37,25 @@ export const main = Util.handler(async (event) => {
     apiVersion: "2024-06-20",
   });
 
-    // Determine the correct price ID based on the plan and billing cycle
-    let priceId;
-    switch(planName) {
-      case 'Basic':
-        priceId = isAnnual ? Resource.BasicAnnualPriceId.value : Resource.BasicMonthlyPriceId.value;
-        break;
-      case 'Pro':
-        priceId = isAnnual ? Resource.ProAnnualPriceId.value : Resource.ProMonthlyPriceId.value;
-        break;
-      case 'Enterprise':
-        priceId = isAnnual ? Resource.EnterpriseAnnualPriceId.value : Resource.EnterpriseMonthlyPriceId.value;
-        break;
-      default:
-        throw new Error("Invalid plan name");
-    }
+  // Fetch all active products and prices from Stripe
+  const products = await stripe.products.list({ active: true });
+  const prices = await stripe.prices.list({ active: true });
+
+  // Find the selected product
+  const selectedProduct = products.data.find(product => product.name === planName);
+  if (!selectedProduct) {
+    throw new Error(`Product not found for plan: ${planName}`);
+  }
+
+  // Find the correct price for the selected product and billing cycle
+  const selectedPrice = prices.data.find(price => 
+    price.product === selectedProduct.id && 
+    price.recurring?.interval === (isAnnual ? 'year' : 'month')
+  );
+
+  if (!selectedPrice) {
+    throw new Error(`Price not found for plan: ${planName} with ${isAnnual ? 'annual' : 'monthly'} billing`);
+  }
 
   // Create a new subscription
   const subscription = await stripe.subscriptions.create({

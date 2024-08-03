@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Form from "react-bootstrap/Form";
 import Stack from "react-bootstrap/Stack";
 import { useFormFields } from "../lib/hooksLib";
@@ -11,7 +11,9 @@ export interface BillingFormType {
   isLoading: boolean;
   planName: string;
   isAnnual: boolean;
-  onSubmit: (token: Token | undefined, error: StripeError | undefined) => Promise<void>;
+  onSubmit: (
+    info: { token?: Token; error?: StripeError }
+  ) => Promise<void>;
 }
 
 export function BillingForm({ isLoading, planName, isAnnual, onSubmit }: BillingFormType) {
@@ -26,39 +28,68 @@ export function BillingForm({ isLoading, planName, isAnnual, onSubmit }: Billing
   isLoading = isProcessing || isLoading;
 
   function validateForm() {
-    return (
+    const isValid = !!(
       stripe &&
       elements &&
       fields.name !== "" &&
       isCardComplete
     );
+    console.log("Form validation:", {
+      stripe: !!stripe,
+      elements: !!elements,
+      name: fields.name,
+      isCardComplete,
+      isValid
+    });
+    return isValid;
   }
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmitClick(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    console.log("Submit button clicked");
 
     if (!stripe || !elements) {
+      console.error("Stripe.js has not loaded");
       return;
     }
 
     const cardElement = elements.getElement(CardElement);
-
     if (!cardElement) {
+      console.error("CardElement not found");
       return;
     }
 
     setIsProcessing(true);
 
-    const { token, error } = await stripe.createToken(cardElement);
+    try {
+      const { token, error } = await stripe.createToken(cardElement);
+      console.log("Stripe token created in BillingForm", token);
 
-    setIsProcessing(false);
+      if (error) {
+        console.error("Error creating Stripe token:", error);
+        throw error;
+      }
 
-    onSubmit(token, error);
+      await onSubmit({ token, error });
+    } catch (e) {
+      console.error("Error in form submission:", e);
+      alert("An error occurred while processing your payment. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
   }
 
+  useEffect(() => {
+    console.log("Form state changed:", {
+      stripe: !!stripe,
+      elements: !!elements,
+      name: fields.name,
+      isCardComplete
+    });
+  }, [stripe, elements, fields.name, isCardComplete]);
 
   return (
-    <Form className="BillingForm" onSubmit={handleSubmit}>
+    <Form className="BillingForm" onSubmit={handleSubmitClick}>
       <Stack gap={3}>
         <Form.Group controlId="name">
           <Form.Label>Cardholder's name</Form.Label>
@@ -71,11 +102,13 @@ export function BillingForm({ isLoading, planName, isAnnual, onSubmit }: Billing
           />
         </Form.Group>
         <div>
-          <Form.Group controlId="card">
           <Form.Label>Credit Card Info</Form.Label>
           <CardElement
             className="card-field"
-            onChange={(e) => setIsCardComplete(e.complete)}
+            onChange={(e) => {
+              setIsCardComplete(e.complete);
+              console.log("Card element change:", e);
+            }}
             options={{
               style: {
                 base: {
@@ -87,7 +120,6 @@ export function BillingForm({ isLoading, planName, isAnnual, onSubmit }: Billing
               },
             }}
           />
-          </Form.Group>
         </div>
         <LoaderButton
           size="lg"

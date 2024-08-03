@@ -66,3 +66,4 @@ usersApi.route("DELETE /users/{id}", "packages/functions/src/users/delete.main")
 usersApi.route("POST /users/create-stripe-customer", "packages/functions/src/users/createStripeCustomer.main");
 usersApi.route("POST /users/create-subscription", "packages/functions/src/users/createSubscription.main");
 usersApi.route("POST /users/add-payment-method", "packages/functions/src/users/addPaymentMethod.main");
+usersApi.route("GET /plans", "packages/functions/src/users/getStripePlans.main");

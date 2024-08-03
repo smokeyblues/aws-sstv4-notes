@@ -10,6 +10,7 @@ const dynamoDb = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 export const main = Util.handler(async (event) => {
   const data = JSON.parse(event.body || "{}");
   const { token } = data;
+  console.log("token from addPaymentMethod: ", token);
 
   if (!token) {
     throw new Error("Stripe token is required, ya big dummy!");
