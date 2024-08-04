@@ -1,3 +1,4 @@
+// getSubscription.ts
 import Stripe from "stripe";
 import { Resource } from "sst";
 import { Util } from "@aws-sst-v4-notes/core/util";
@@ -38,6 +39,10 @@ export const main = Util.handler(async (event) => {
       isSubscribed: isActive,
       subscriptionStatus: subscription.status,
       planId: subscription.items.data[0].price.id,
+      planName: user.planName,
+      isAnnual: user.isAnnual,
+      currentPeriodEnd: subscription.current_period_end,
+      // Include any other relevant information from the user object or Stripe subscription
     });
   } catch (error) {
     console.error('Error retrieving subscription:', error);

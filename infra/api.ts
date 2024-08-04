@@ -2,13 +2,7 @@ import {
   notesTable, 
   usersTable, 
   stripeSecretKey,
-  stripePublicKey,
-  basicMonthlyPriceId, 
-  basicAnnualPriceId, 
-  proMonthlyPriceId, 
-  proAnnualPriceId, 
-  enterpriseMonthlyPriceId, 
-  enterpriseAnnualPriceId, 
+  stripePublicKey, 
 } from "./storage";
 
 // Create the API
@@ -33,13 +27,7 @@ export const usersApi = new sst.aws.ApiGatewayV2("UsersApi", {
         link: [
           usersTable, 
           stripeSecretKey, 
-          stripePublicKey,
-          basicMonthlyPriceId, 
-          basicAnnualPriceId, 
-          proMonthlyPriceId, 
-          proAnnualPriceId, 
-          enterpriseMonthlyPriceId, 
-          enterpriseAnnualPriceId],
+          stripePublicKey],
       },
       args: {
         auth: { iam: true }
@@ -58,7 +46,7 @@ notesApi.route("POST /billing", "packages/functions/src/billing.main");
 
 // Routes for users API
 usersApi.route("POST /users", "packages/functions/src/users/create.main");
-usersApi.route("GET /users/{id}", "packages/functions/src/users/get.main");
+usersApi.route("GET /users", "packages/functions/src/users/get.main");
 usersApi.route("PUT /users/{id}", "packages/functions/src/users/update.main");
 usersApi.route("DELETE /users/{id}", "packages/functions/src/users/delete.main");
 
@@ -68,3 +56,5 @@ usersApi.route("POST /users/create-subscription", "packages/functions/src/users/
 usersApi.route("POST /users/add-payment-method", "packages/functions/src/users/addPaymentMethod.main");
 usersApi.route("GET /plans", "packages/functions/src/users/getStripePlans.main");
 usersApi.route("GET /users/subscription", "packages/functions/src/users/getSubscription.main");
+usersApi.route("POST /users/create-setup-intent", "packages/functions/src/users/createSetupIntent.main");
+usersApi.route("POST /users/update-payment-method", "packages/functions/src/users/updatePaymentMethod.main");

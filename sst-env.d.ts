@@ -3,22 +3,6 @@
 import "sst"
 declare module "sst" {
   export interface Resource {
-    BasicAnnualPriceId: {
-      type: "sst.sst.Secret"
-      value: string
-    }
-    BasicMonthlyPriceId: {
-      type: "sst.sst.Secret"
-      value: string
-    }
-    EnterpriseAnnualPriceId: {
-      type: "sst.sst.Secret"
-      value: string
-    }
-    EnterpriseMonthlyPriceId: {
-      type: "sst.sst.Secret"
-      value: string
-    }
     Frontend: {
       type: "sst.aws.StaticSite"
       url: string
@@ -34,14 +18,6 @@ declare module "sst" {
     NotesApi: {
       type: "sst.aws.ApiGatewayV2"
       url: string
-    }
-    ProAnnualPriceId: {
-      type: "sst.sst.Secret"
-      value: string
-    }
-    ProMonthlyPriceId: {
-      type: "sst.sst.Secret"
-      value: string
     }
     StripePublicKey: {
       type: "sst.sst.Secret"

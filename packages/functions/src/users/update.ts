@@ -16,11 +16,10 @@ export const main = Util.handler(async (event) => {
     },
     // 'UpdateExpression' defines the attributes to be updated
     // 'ExpressionAttributeValues' defines the value in the update expression
-    UpdateExpression: "SET email = :email, customerId = :customerId, bio = :bio",
+    UpdateExpression: "SET email = :email, bio = :bio",
     ExpressionAttributeValues: {
-      ":bio": data.attachment || null,
-      ":email": data.content || null,
-      ":customerId": data.customerId || null
+      ":bio": data.bio || null,
+      ":email": data.email || null,
     },
   };
 
