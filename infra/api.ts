@@ -67,3 +67,4 @@ usersApi.route("POST /users/create-stripe-customer", "packages/functions/src/use
 usersApi.route("POST /users/create-subscription", "packages/functions/src/users/createSubscription.main");
 usersApi.route("POST /users/add-payment-method", "packages/functions/src/users/addPaymentMethod.main");
 usersApi.route("GET /plans", "packages/functions/src/users/getStripePlans.main");
+usersApi.route("GET /users/subscription", "packages/functions/src/users/getSubscription.main");

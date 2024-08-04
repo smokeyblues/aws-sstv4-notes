@@ -10,6 +10,8 @@ import NotFound from "./containers/NotFound.tsx";
 
 import AuthenticatedRoute from "./components/AuthenticatedRoute.tsx";
 import UnauthenticatedRoute from "./components/UnauthenticatedRoute.tsx";
+import SubscribedRoute from "./components/SubscribedRoute.tsx";
+import UnsubscribedRoute from "./components/UnsubscribedRoute.tsx";
 
 export default function Links() {
   return (
@@ -44,7 +46,9 @@ export default function Links() {
     path="/notes/new"
     element={
         <AuthenticatedRoute>
+            <SubscribedRoute>
         <NewNote />
+            </SubscribedRoute>
         </AuthenticatedRoute>
     }
     />
@@ -53,7 +57,9 @@ export default function Links() {
     path="/notes/:id"
     element={
         <AuthenticatedRoute>
-        <Notes />
+        <SubscribedRoute>
+            <Notes />
+        </SubscribedRoute>
         </AuthenticatedRoute>
     }
     />
