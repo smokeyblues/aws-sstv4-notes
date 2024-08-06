@@ -1,3 +1,4 @@
+// createSubscription.ts
 import Stripe from "stripe";
 import { Resource } from "sst";
 import { Util } from "@aws-sst-v4-notes/core/util";
@@ -9,10 +10,10 @@ const dynamoDb = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 
 export const main = Util.handler(async (event) => {
   const data = JSON.parse(event.body || "{}");
-  const { priceId, planName, isAnnual } = data;
+  const { setupIntentId, priceId, planName, isAnnual } = data;
 
-  if (!planName || isAnnual === undefined) {
-    throw new Error("Plan name and billing cycle are required");
+  if (!setupIntentId || !priceId || !planName || isAnnual === undefined) {
+    throw new Error("Missing required parameters");
   }
 
   const userId = event.requestContext.authorizer?.iam.cognitoIdentity.identityId;
@@ -37,30 +38,17 @@ export const main = Util.handler(async (event) => {
     apiVersion: "2024-06-20",
   });
 
-  // Fetch all active products and prices from Stripe
-  const products = await stripe.products.list({ active: true });
-  const prices = await stripe.prices.list({ active: true });
-
-  // Find the selected product
-  const selectedProduct = products.data.find(product => product.name === planName);
-  if (!selectedProduct) {
-    throw new Error(`Product not found for plan: ${planName}`);
-  }
-
-  // Find the correct price for the selected product and billing cycle
-  const selectedPrice = prices.data.find(price => 
-    price.product === selectedProduct.id && 
-    price.recurring?.interval === (isAnnual ? 'year' : 'month')
-  );
-
-  if (!selectedPrice) {
-    throw new Error(`Price not found for plan: ${planName} with ${isAnnual ? 'annual' : 'monthly'} billing`);
+  // Retrieve the SetupIntent to get the payment method
+  const setupIntent = await stripe.setupIntents.retrieve(setupIntentId);
+  if (setupIntent.status !== 'succeeded' || !setupIntent.payment_method) {
+    throw new Error("Invalid SetupIntent");
   }
 
   // Create a new subscription
   const subscription = await stripe.subscriptions.create({
     customer: user.customerId,
     items: [{ price: priceId }],
+    default_payment_method: setupIntent.payment_method as string,
   });
 
   // Update the user data in DynamoDB
@@ -77,7 +65,7 @@ export const main = Util.handler(async (event) => {
     ReturnValues: "ALL_NEW" as ReturnValue,
   };
 
-  await dynamoDb.send(new UpdateCommand(updateParams));
+  const updatedUser = await dynamoDb.send(new UpdateCommand(updateParams));
 
   return JSON.stringify({
     userId: userId,

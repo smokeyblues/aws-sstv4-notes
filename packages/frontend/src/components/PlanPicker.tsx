@@ -1,11 +1,11 @@
+// PlanPicker.tsx
 import React, { useState, useEffect } from "react";
 import { API } from "aws-amplify";
-import { onError } from "../lib/errorLib";
 import { useNavigate } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import { BillingForm } from "./BillingForm";
-import { Token } from "@stripe/stripe-js";
+import { onError } from "../lib/errorLib";
 import config from "../config";
 import "./PlanPicker.css";
 import { Plan } from "../types/plan";
@@ -18,12 +18,12 @@ export default function PlanPicker() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [isAnnual, setIsAnnual] = useState(false);
+  const [clientSecret, setClientSecret] = useState("");
 
   useEffect(() => {
     async function loadPlans() {
       try {
         const fetchedPlans = await API.get("users", "/plans", {});
-        // Sort plans from least expensive to most expensive based on monthly price
         const sortedPlans = fetchedPlans.sort((a: Plan, b: Plan) => a.monthlyPrice - b.monthlyPrice);
         setPlans(sortedPlans);
         if (sortedPlans.length > 0) {
@@ -37,6 +37,21 @@ export default function PlanPicker() {
     loadPlans();
   }, []);
 
+  useEffect(() => {
+    async function createSetupIntent() {
+      try {
+        const result = await API.post("users", "/users/create-setup-intent", {});
+        setClientSecret(result.clientSecret);
+      } catch (e) {
+        onError(e);
+      }
+    }
+
+    if (selectedPlan) {
+      createSetupIntent();
+    }
+  }, [selectedPlan]);
+
   const handlePlanChange = (plan: Plan) => {
     setSelectedPlan(plan);
   };
@@ -45,25 +60,13 @@ export default function PlanPicker() {
     setIsAnnual(event.target.checked);
   };
 
-  const handleFormSubmit: BillingFormType["onSubmit"] = async ({ token, error }: { token: Token | null; error: any }) => {
-    if (error) {
-      onError(error);
-      return;
-    }
-
-    console.log("Token passed from BillingForm:", token);
-
+  const handleFormSubmit = async (setupIntentId: string) => {
     setIsLoading(true);
 
     try {
-      // Add the payment method to the customer
-      await API.post("users", "/users/add-payment-method", {
-        body: { token: token?.id },
-      });
-
-      // Create the subscription
       await API.post("users", "/users/create-subscription", {
         body: { 
+          setupIntentId,
           priceId: isAnnual ? selectedPlan?.annualPriceId : selectedPlan?.monthlyPriceId,
           planName: selectedPlan?.name,
           isAnnual,
@@ -109,16 +112,14 @@ export default function PlanPicker() {
           </div>
         ))}
       </div>
-      {selectedPlan && (
+      {selectedPlan && clientSecret && (
         <Elements
           stripe={stripePromise}
           options={{
-            fonts: [
-              {
-                cssSrc:
-                  "https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800",
-              },
-            ],
+            clientSecret,
+            appearance: {
+              theme: 'stripe',
+            },
           }}
         >
           <BillingForm 
