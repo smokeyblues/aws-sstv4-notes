@@ -58,3 +58,4 @@ usersApi.route("GET /plans", "packages/functions/src/users/getStripePlans.main")
 usersApi.route("GET /users/subscription", "packages/functions/src/users/getSubscription.main");
 usersApi.route("POST /users/create-setup-intent", "packages/functions/src/users/createSetupIntent.main");
 usersApi.route("POST /users/update-payment-method", "packages/functions/src/users/updatePaymentMethod.main");
+usersApi.route("POST /users/complete-payment-update", "packages/functions/src/users/completePaymentUpdate.main");

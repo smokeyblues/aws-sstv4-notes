@@ -14,6 +14,7 @@ import SubscribedRoute from "./components/SubscribedRoute.tsx";
 
 import UserProfile from "./containers/UserProfile";
 import SubscriptionManagement from "./containers/SubscriptionManagement";
+import SubscriptionConfirmed from "./containers/SubscriptionConfirmed";
 
 export default function Links() {
   return (
@@ -21,73 +22,81 @@ export default function Links() {
       <Route path="/" element={<Home />} />
       
     <Route
-    path="/login"
-    element={
-        <UnauthenticatedRoute>
-        <Login />
-        </UnauthenticatedRoute>
+      path="/login"
+      element={
+          <UnauthenticatedRoute>
+          <Login />
+          </UnauthenticatedRoute>
     }
     />
     <Route
-    path="/signup"
-    element={
-        <UnauthenticatedRoute>
-        <Signup />
-        </UnauthenticatedRoute>
+      path="/signup"
+      element={
+          <UnauthenticatedRoute>
+          <Signup />
+          </UnauthenticatedRoute>
     }
     />
     <Route
-    path="/settings"
-    element={
-        <AuthenticatedRoute>
-        <Settings />
-        </AuthenticatedRoute>
-    }
-    />
-          <Route
-        path="/profile"
-        element={
+      path="/settings"
+      element={
           <AuthenticatedRoute>
-            <UserProfile />
+          <Settings />
           </AuthenticatedRoute>
-        }
-      />
-      <Route
-        path="/manage-subscription"
-        element={
-          <AuthenticatedRoute>
-            <SubscriptionManagement />
-          </AuthenticatedRoute>
-        }
-      />
+    }
+    />
     <Route
-    path="/notes/new"
-    element={
+      path="/profile"
+      element={
         <AuthenticatedRoute>
-            <SubscribedRoute>
-        <NewNote />
-            </SubscribedRoute>
+          <UserProfile />
         </AuthenticatedRoute>
+      }
+    />
+    <Route
+      path="/manage-subscription"
+      element={
+        <AuthenticatedRoute>
+          <SubscriptionManagement />
+        </AuthenticatedRoute>
+      }
+    />
+    <Route
+      path="/subscription-confirmed"
+      element={
+        <AuthenticatedRoute>
+          <SubscriptionConfirmed />
+        </AuthenticatedRoute>
+      }
+    />
+    <Route
+      path="/notes/new"
+      element={
+          <AuthenticatedRoute>
+              <SubscribedRoute>
+          <NewNote />
+              </SubscribedRoute>
+          </AuthenticatedRoute>
     }
     />
 
     <Route
-    path="/notes/:id"
-    element={
-        <AuthenticatedRoute>
-        <SubscribedRoute>
-            <Notes />
-        </SubscribedRoute>
-        </AuthenticatedRoute>
+      path="/notes/:id"
+      element={
+          <AuthenticatedRoute>
+          <SubscribedRoute>
+              <Notes />
+          </SubscribedRoute>
+          </AuthenticatedRoute>
     }
     />
 
     <Route
-    path="/choose-plan"
-    element={
-        <AuthenticatedRoute>
-        <PlanPicker />
-        </AuthenticatedRoute>
+      path="/choose-plan"
+      element={
+          <AuthenticatedRoute>
+          <PlanPicker />
+          </AuthenticatedRoute>
     }
     />
 

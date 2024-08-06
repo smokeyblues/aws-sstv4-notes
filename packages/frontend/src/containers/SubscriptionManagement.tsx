@@ -12,37 +12,35 @@ import "./SubscriptionManagement.css";
 
 const stripePromise = loadStripe(config.STRIPE_KEY);
 
-function PaymentForm({ handleSubmit, isLoading }) {
-  const stripe = useStripe();
-  const elements = useElements();
-
-  const handlePaymentSubmit = async (event) => {
-    event.preventDefault();
-    if (!stripe || !elements) return;
-
-    const result = await stripe.confirmSetup({
-      elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/subscription-confirmed`,
-      },
-    });
-
-    if (result.error) {
-      onError(result.error);
-    } else {
-      handleSubmit();
-    }
-  };
-
-  return (
-    <form onSubmit={handlePaymentSubmit}>
-      <PaymentElement />
-      <LoaderButton type="submit" isLoading={isLoading}>
-        Update Payment Method
-      </LoaderButton>
-    </form>
-  );
-}
+function PaymentForm({ clientSecret, isLoading }) {
+    const stripe = useStripe();
+    const elements = useElements();
+  
+    const handleSubmit = async (event) => {
+      event.preventDefault();
+      if (!stripe || !elements) return;
+  
+      const result = await stripe.confirmSetup({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/subscription-confirmed`,
+        },
+      });
+  
+      if (result.error) {
+        onError(result.error);
+      }
+    };
+  
+    return (
+      <form onSubmit={handleSubmit}>
+        <PaymentElement />
+        <LoaderButton type="submit" isLoading={isLoading}>
+          Update Payment Method
+        </LoaderButton>
+      </form>
+    );
+  }
 
 export default function SubscriptionManagement() {
   const nav = useNavigate();
@@ -56,7 +54,7 @@ export default function SubscriptionManagement() {
         const subData = await API.get("users", "/users/subscription", {});
         setSubscription(subData);
 
-        const setupIntent = await API.post("users", "/users/create-setup-intent", {});
+        const setupIntent = await API.post("users", "/users/create-setup-intent", {}); 
         setClientSecret(setupIntent.clientSecret);
       } catch (e) {
         onError(e);
@@ -83,7 +81,7 @@ export default function SubscriptionManagement() {
   return (
     <div className="SubscriptionManagement">
       <h2>Manage Subscription</h2>
-      {subscription && (
+      {subscription && subscription.isSubscribed && (
         <div>
           <p>Current Plan: {subscription.planName}</p>
           <p>Billing Cycle: {subscription.isAnnual ? "Annual" : "Monthly"}</p>
@@ -96,7 +94,7 @@ export default function SubscriptionManagement() {
       <h3>Update Payment Method</h3>
       {clientSecret && (
         <Elements stripe={stripePromise} options={{ clientSecret }}>
-          <PaymentForm handleSubmit={handlePaymentUpdate} isLoading={isLoading} />
+          <PaymentForm handleSubmit={clientSecret} isLoading={isLoading} />
         </Elements>
       )}
     </div>

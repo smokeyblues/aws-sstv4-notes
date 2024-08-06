@@ -63,7 +63,7 @@ export function BillingForm({ isLoading, planName, isAnnual, onSubmit }: Billing
 
     try {
       const { token, error } = await stripe.createToken(cardElement);
-      console.log("Stripe token created in BillingForm", token);
+      console.log("Stripe token created", token);
 
       if (error) {
         console.error("Error creating Stripe token:", error);
