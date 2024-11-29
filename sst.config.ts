@@ -3,7 +3,7 @@
 export default $config({
   app(input) {
     return {
-      name: "aws-sst-v4-notes",
+      name: "aws-sstv4-notes",
       removal: input?.stage === "production" ? "retain" : "remove",
       home: "aws",
     };

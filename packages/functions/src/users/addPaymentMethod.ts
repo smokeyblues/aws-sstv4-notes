@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import { Resource } from "sst";
-import { Util } from "@aws-sst-v4-notes/core/util";
+import { Util } from "@aws-sstv4-notes/core/util";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { UpdateCommand, GetCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { ReturnValue } from "@aws-sdk/client-dynamodb";

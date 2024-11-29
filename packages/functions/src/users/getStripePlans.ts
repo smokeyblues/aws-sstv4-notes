@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import { Resource } from "sst";
-import { Util } from "@aws-sst-v4-notes/core/util";
+import { Util } from "@aws-sstv4-notes/core/util";
 
 export const main = Util.handler(async (event) => {
   const stripe = new Stripe(Resource.StripeSecretKey.value, {

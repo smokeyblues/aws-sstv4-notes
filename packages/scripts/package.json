@@ -1,8 +1,8 @@
 {
-  "name": "@aws-sst-v4-notes/scripts",
+  "name": "@aws-sstv4-notes/scripts",
   "version": "0.0.0",
   "dependencies": {
-    "@aws-sst-v4-notes/core": "*",
+    "@aws-sstv4-notes/core": "*",
     "sst": "*"
   },
   "scripts": {

@@ -3,5 +3,10 @@
   "compilerOptions": {
     "module": "NodeNext",
     "moduleResolution": "Bundler",
-  },
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "@functions/*": ["functions/src/*"]
+    }
+  }
 }

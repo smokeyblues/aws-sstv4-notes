@@ -1,5 +1,5 @@
 {
-  "name": "aws-sst-v4-notes",
+  "name": "aws-sstv4-notes",
   "version": "0.0.0",
   "workspaces": [
     "packages/*"

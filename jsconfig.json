@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./packages/frontend/src/*"],
+      "@functions/*": ["./packages/functions/src/*"],
+      "@core/*": ["./packages/core/src/*"]
+    }
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "name": "@aws-sst-v4-notes/core",
+  "name": "@aws-sstv4-notes/core",
   "version": "0.0.0",
   "scripts": {
     "test": "sst shell vitest"

@@ -16,7 +16,7 @@ A template to create a monorepo SST ❍ Ion project.
 3. Rename the files in the project to the name of your app. 
 
    ```bash
-   npx replace-in-file /aws-sst-v4-notes/g MY_APP **/*.* --verbose
+   npx replace-in-file /aws-sstv4-notes/g MY_APP **/*.* --verbose
    ```
 
 4. Deploy!
